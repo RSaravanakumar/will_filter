@@ -51,7 +51,7 @@ module WillFilter
     end
     
     def self.load_yml(file_path)
-      yml = YAML.load_file("#{Rails.root}#{file_path}")[Rails.env]
+      yml = YAML.load_file("#{Rails.root}#{file_path}",aliases: true)[Rails.env]
       HashWithIndifferentAccess.new(yml)
     end
     
