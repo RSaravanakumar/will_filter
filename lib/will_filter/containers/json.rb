@@ -34,7 +34,7 @@ module WillFilter
   module Containers
     class Json < WillFilter::FilterContainer
       def self.operators
-        [:is, :is_in, :is_less_than, :is_greater_than, :is_in_ancestry]
+        [:is, :is_in, :is_less_than, :is_greater_than, :is_in_expanded_list]
       end
 
       def template_name
@@ -48,7 +48,7 @@ module WillFilter
       def sql_condition
         return [" JSON_EXTRACT(#{json_key_split[0]}, '$.#{json_key_split[1]}') = JSON_EXTRACT(?,'$') ", json_value] if operator == :is
         return [" JSON_OVERLAPS(JSON_EXTRACT(#{json_key_split[0]}, '$.#{json_key_split[1]}'), ? )",json_in_value] if operator == :is_in
-        return [" JSON_OVERLAPS(JSON_EXTRACT(#{json_key_split[0]}, '$.#{json_key_split[1]}'), ? )",fetch_by_ancestry] if operator == :is_in_ancestry
+        return [" JSON_OVERLAPS(JSON_EXTRACT(#{json_key_split[0]}, '$.#{json_key_split[1]}'), ? )",expand_list] if operator == :is_in_expanded_list
         return [" JSON_EXTRACT(#{json_key_split[0]}, '$.#{json_key_split[1]}') < JSON_EXTRACT(?,'$') ", json_value] if operator == :is_less_than
         return [" JSON_EXTRACT(#{json_key_split[0]}, '$.#{json_key_split[1]}') > JSON_EXTRACT(?,'$') ", json_value] if operator == :is_greater_than
       end
@@ -65,8 +65,8 @@ module WillFilter
         "[#{value}]"
       end
 
-      def fetch_by_ancestry
-        values = self.filter.model_class_name.constantize.fetch_by_ancestry(value)
+      def expand_list
+        values = self.filter.model_class_name.constantize.expand_list(value)
         "[#{values}]"
       end
     end

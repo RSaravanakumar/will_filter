@@ -146,7 +146,9 @@ defaults: &defaults
     is_greater_than:      1400
     is_less_than:         1500
     is_filtered_by:       1600
-    is_in_ancestry:       1700
+    is_in_expanded_list:  1700
+
+  table_name: 'will_filter_filters'
     
     
 #############################################################################

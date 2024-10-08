@@ -63,6 +63,10 @@ module WillFilter
       config[:require_filter_extensions]
     end
 
+    def self.table_name
+      config[:table_name]
+    end
+
     def self.disable_filter_saving?
       config[:disable_filter_saving]
     end

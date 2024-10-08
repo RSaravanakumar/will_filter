@@ -51,7 +51,7 @@
 
 module WillFilter
   class Filter < ActiveRecord::Base
-    self.table_name = :will_filter_filters
+    self.table_name = WillFilter::Config.table_name
 
     # set_table_name  :will_filter_filters
     serialize       :data, coder: JSON
@@ -176,7 +176,7 @@ module WillFilter
     end
 
     def json_columns
-      []
+      {}
     end
 
     def definition
@@ -187,9 +187,9 @@ module WillFilter
           next unless contains_column?(key)
           defs[key] = default_condition_definition_for(col.name, col.sql_type)
         end
-        json_columns.each do |k|
+        (json_columns[model_class_name] || {}).each do |k,v|
           key = k.to_sym
-          defs[k] = default_condition_definition_for(k, 'json')
+          defs[k] = v ? default_condition_definition_for(k, 'json').except(v) : default_condition_definition_for(k, 'json')
         end
         inner_joins.each do |inner_join|
           join_class = association_class(inner_join)
