@@ -51,7 +51,7 @@
 
 module WillFilter
   class Filter < ActiveRecord::Base
-    self.table_name = 'saas_kit_filters'
+    self.table_name = :will_filter_filters
 
     # set_table_name  :will_filter_filters
     serialize       :data, coder: JSON
