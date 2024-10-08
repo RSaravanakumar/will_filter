@@ -51,7 +51,7 @@ module WillFilter
     end
     
     def self.load_yml(file_path)
-      yml = YAML.load_file("#{Rails.root}#{file_path}")[Rails.env]
+      yml = YAML.load_file("#{Rails.root}#{file_path}",aliases: true)[Rails.env]
       HashWithIndifferentAccess.new(yml)
     end
     
@@ -61,6 +61,10 @@ module WillFilter
   
     def self.require_filter_extensions?
       config[:require_filter_extensions]
+    end
+
+    def self.table_name
+      config[:table_name]
     end
 
     def self.disable_filter_saving?

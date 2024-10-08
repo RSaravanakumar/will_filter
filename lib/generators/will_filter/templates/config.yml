@@ -105,6 +105,7 @@ defaults: &defaults
     boolean:              WillFilter::Containers::Boolean
     list:                 WillFilter::Containers::List
     filter_list:          WillFilter::Containers::FilterList
+    json:                 WillFilter::Containers::Json
     
   data_types:             # mapping between data types and containers   
     bigint:               [nil, numeric, numeric_range, numeric_delimited]
@@ -125,6 +126,7 @@ defaults: &defaults
     bytea:                [nil, text, text_delimited]
     boolean:              [nil, boolean]
     tinyint:              [nil, boolean]
+    json:                 [json]
 
   operators:              # operators precedence
     is:                   100
@@ -144,6 +146,9 @@ defaults: &defaults
     is_greater_than:      1400
     is_less_than:         1500
     is_filtered_by:       1600
+    is_in_expanded_list:  1700
+
+  table_name: 'will_filter_filters'
     
     
 #############################################################################

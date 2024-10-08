@@ -51,10 +51,10 @@
 
 module WillFilter
   class Filter < ActiveRecord::Base
-    self.table_name = :will_filter_filters
+    self.table_name = WillFilter::Config.table_name
 
     # set_table_name  :will_filter_filters
-    serialize       :data
+    serialize       :data, coder: JSON
     before_save     :prepare_save
     after_find      :process_find
 
@@ -83,7 +83,7 @@ module WillFilter
     end
 
     def process_find
-      @errors = {}
+      @wf_errors = {}
       deserialize_from_params(self.data)
     end
 
@@ -106,8 +106,8 @@ module WillFilter
       @key ||= ''
     end
 
-    def errors
-      @errors ||= {}
+    def wf_errors
+      @wf_errors ||= {}
     end
 
     def format
@@ -164,7 +164,7 @@ module WillFilter
     end
 
     def model_columns
-      @model_columns ||= model_class.columns
+      @model_columns ||= model_class.columns.reject{|col| col.sql_type.to_s == 'json'}
     end
 
     def model_column_keys
@@ -175,6 +175,10 @@ module WillFilter
       model_column_keys.index(key.to_sym) != nil
     end
 
+    def json_columns
+      {}
+    end
+
     def definition
       @definition ||= begin
         defs = {}
@@ -182,6 +186,10 @@ module WillFilter
           key = col.name.to_sym
           next unless contains_column?(key)
           defs[key] = default_condition_definition_for(col.name, col.sql_type)
+        end
+        (json_columns[model_class_name] || {}).each do |k,v|
+          key = k.to_sym
+          defs[k] = v ? default_condition_definition_for(k, 'json').except(v) : default_condition_definition_for(k, 'json')
         end
         inner_joins.each do |inner_join|
           join_class = association_class(inner_join)
@@ -580,7 +588,6 @@ module WillFilter
       else
         @format = params[:wf_export_format].to_sym
       end
-
       i = 0
       while params["wf_c#{i}"] do
         conditon_key = params["wf_c#{i}"]
@@ -615,7 +622,7 @@ module WillFilter
     # Validations
     #############################################################################
     def errors?
-      (@errors and @errors.size > 0)
+      (@wf_errors and @wf_errors.size > 0)
     end
 
     def empty?
@@ -638,15 +645,15 @@ module WillFilter
     end
 
     def validate!
-      @errors = {}
+      @wf_errors = {}
       0.upto(size - 1) do |index|
         condition = condition_at(index)
         err = condition.validate
-        @errors[index] = err if err
+        @wf_errors[index] = err if err
       end
 
       unless required_conditions_met?
-        @errors[:filter] = "Filter must contain at least one of the following conditions: #{required_condition_keys.join(", ")}"
+        @wf_errors[:filter] = "Filter must contain at least one of the following conditions: #{required_condition_keys.join(", ")}"
       end
 
       errors?
@@ -939,7 +946,7 @@ module WillFilter
         end
 
 
-        recs = recs.page(page).per(per_page)
+        recs = recs.page(page).per_page(per_page)
 
         recs.wf_filter = self
 

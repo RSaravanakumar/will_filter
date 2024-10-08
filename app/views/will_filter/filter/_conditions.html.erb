@@ -2,9 +2,9 @@
 
 <div class="body">
 
-  <% if wf_filter.errors[:filter] %>
+  <% if wf_filter.wf_errors[:filter] %>
     <div class="wf_filter_error">
-      <%= wf_filter.errors[:filter] %>
+      <%= wf_filter.wf_errors[:filter] %>
     </div>
   <% end %>
 
