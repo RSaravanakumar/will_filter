@@ -335,7 +335,7 @@ DEPENDENCIES
   kaminari
   pry
   puma (~> 3.7)
-  rails (= 8.0.3)
+  rails (~> 8.0)
   rr
   rspec
   rspec-rails
