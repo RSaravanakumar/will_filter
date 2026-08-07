@@ -3,7 +3,7 @@ PATH
   specs:
     will_filter (5.1.4)
       kaminari (~> 1.1)
-      rails (= 8.0.3)
+      rails (~> 8.0)
       sass (~> 3.5)
 
 GEM
